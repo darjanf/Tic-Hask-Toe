@@ -62,7 +62,6 @@ switchPlayer X = O
 switchPlayer O = X
 switchPlayer _ = EMPTY
 
-
 -- Q#12
 showSquare :: Square -> String
 showSquare X = "X"
