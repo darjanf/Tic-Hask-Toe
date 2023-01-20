@@ -24,4 +24,11 @@ _PIKACHU_ID_ = 25
 _PARTY_SIZE_ :: Quantity
 _PARTY_SIZE_ = 6
 
-data MyBool = True | False deriving (Show, Read, Eq, Ord, Bounded, Enum)
+pikachu :: (String, Int)
+pikachu = ("Pikachu", 25)
+
+description :: (String, Int) -> String
+description (name, number) = name ++ " is " ++ show number ++ " years old!"
+
+description_ :: (String, Int) -> String
+description_ p = fst p ++ " is " ++ show (snd p) ++ " years old!"
