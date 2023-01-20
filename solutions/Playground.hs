@@ -14,3 +14,14 @@ _FIB_ = [33,22, 11]
 _FAV_POKEMON_ :: String
 _FAV_POKEMON_ = "Alakazam"
 
+type Id = Int
+type Quantity = Int
+type Name = String
+
+_PIKACHU_ID_ :: Id
+_PIKACHU_ID_ = 25
+
+_PARTY_SIZE_ :: Quantity
+_PARTY_SIZE_ = 6
+
+data MyBool = True | False deriving (Show, Read, Eq, Ord, Bounded, Enum)
