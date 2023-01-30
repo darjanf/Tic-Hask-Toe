@@ -1,4 +1,4 @@
-module A1 where
+--module A1 where
 
 import Data.Char (toUpper)
 
@@ -32,3 +32,42 @@ description (name, number) = name ++ " is " ++ show number ++ " years old!"
 
 description_ :: (String, Int) -> String
 description_ p = fst p ++ " is " ++ show (snd p) ++ " years old!"
+
+third :: [a] -> a
+third (_:_:c:_) = c
+
+isNull :: [a] -> Bool
+isNull xs = null xs 
+
+isNull' :: [a] -> Bool
+isNull' xs = length xs == 0 
+
+isNull'' :: [a] -> Bool
+isNull'' []       = True
+isNull'' (x : xs) = False
+
+isNull''' :: [a] -> Bool
+isNull''' []       = True
+isNull''' _        = False
+
+isNull'''' :: [a] -> Bool
+isNull'''' xs
+    | null xs       = True
+    | otherwise     = False
+
+isSingleton :: [a] -> Bool
+isSingleton (x : []) = True
+isSingleton _        = False
+
+isSingleton' :: [a] -> Bool
+isSingleton' [x] = True
+isSingleton' _   = False
+
+isSecondLetterT :: String -> Bool
+isSecondLetterT (_ : 't' : _) = True
+isSecondLetterT _             = False
+
+last' :: [a] -> a
+last' []       = error "empty list"
+last' [x]      = x
+last' (_ : xs)  = last' xs
