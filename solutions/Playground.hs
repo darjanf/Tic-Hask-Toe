@@ -1,5 +1,3 @@
---module A1 where
-
 import Data.Char (toUpper)
 
 _MY_PAIR_ :: (Int, Bool)
