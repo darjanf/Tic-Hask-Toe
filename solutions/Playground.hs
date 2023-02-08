@@ -1,3 +1,5 @@
+module Playground where
+
 import Data.Char
 import Debug.Trace
 
