@@ -162,3 +162,72 @@ isPrime z = loop 2 z
 elem' :: Eq a => a -> [a] -> Bool
 elem' x []       = False
 elem' x (y : ys) = x == y || elem' x ys
+
+--map
+upper :: String -> String
+upper []     = []
+upper (x:xs) = toUpper x : upper xs
+
+-- map' :: (a -> b) -> [a] -> [b] 
+-- (a -> b) is the first argument
+-- [a] is second argument
+
+upperS :: String -> String
+upperS = map toUpper
+-- or 
+-- upperS xs = map toUpper xs
+
+--filter
+removeSymbol :: String -> String
+removeSymbol [] = []
+removeSymbol (x:xs)
+    | (isAlpha x) = x : removeSymbol xs
+    | otherwise   = removeSymbol xs
+
+double :: Int -> Int
+double x = x * 2
+
+ys :: [Int]
+ys = [ 7, 1, 8, 12 ]
+
+-- calling map
+-- map double ys
+
+lenghts :: [String] -> [Int]
+lenghts = map length
+-- calling lenghts
+-- lenghts ["aaa", "bbbb", "ccccc"]
+
+--filter to remove chars if it is not a consonstant
+s :: String
+s = "lorem ipsum dolor sit amet"
+isConsonant :: Char -> Bool
+-- isConsonant c = isAlpha c && not (elem c "aeiou")
+isConsonant = \c -> isAlpha c && not (elem c "aeiou")
+s' = filter isConsonant s -- calling filter
+s'' = filter (\c -> isAlpha c && not (elem c "aeiou")) s -- calling filter without using functionname
+
+-- Lambda Expression
+-- a general representation of a function
+-- (\x -> ...) 7
+-- x is the argument; ... is the filter; 7 is the number used when filter is used
+-- (\x -> x+2) 3 
+-- result: 5
+addTwo = \x -> x + 2
+-- addTwo 2 --> result = 4
+addTwoResult = addTwo 3
+-- addTwoResult = 5
+
+-- using map without function
+j = map (\x -> x^2) [1,2,3,4,5]
+-- result = [1,4,9,16,25]
+h = map (\x -> 2^x) [1,2,3,4,5]
+-- result = [2,4,8,16,32]
+-- Operator Section
+-- (+ 3)
+-- \x -> x + 3 
+-- (* 3)
+-- \x -> x * 3
+-- prefix always with () surrounded
+-- infix always with `` surrounded
+
