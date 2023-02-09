@@ -5,6 +5,7 @@ import A2
 
 import Data.List (transpose)
 import Data.Monoid (All(getAll))
+import Control.Concurrent (yield)
 
 -- *** Assignment 3-1 ***
 
@@ -62,17 +63,39 @@ getAllLines b = concat [b, transpose b, [getDiag1 b], [getDiag2 b]]
 -- *** Assignment 3-2 ***
 
 -- Q#07
-
-putSquare = undefined
+putSquare :: Player -> Board -> Move -> Board
+putSquare _ [] _ = []
+putSquare p b (r,c)
+    | isInBound r = concat [x, [replaceSquareInRow p c y], ys]
+    | otherwise   = b
+    where 
+        (x,y:ys) = splitAt r b
 
 -- Q#08
-
-prependRowIndices = undefined
+prependRowIndices' :: [String] -> [String]
+prependRowIndices' []     = []
+prependRowIndices' sl = workerFunction (indexRowStrings sl)
+    where
+        workerFunction :: [(Char,String)] -> [String]
+        workerFunction [] = []
+        workerFunction ((i,str):hs) = (i : str) : workerFunction hs
 
 -- Q#09
-
-isWinningLine = undefined
+isWinningLine' :: Player -> (Line -> Bool)
+isWinningLine' _ [] = False
+isWinningLine' p l = workerFunction l
+    where
+        workerFunction :: Line -> Bool
+        workerFunction []     = True 
+        workerFunction (x:xs) = (x == p) && workerFunction xs
 
 -- Q#10
-
-isValidMove = undefined
+isValidMove :: Board -> (Move -> Bool)
+isValidMove [] _ = False
+isValidMove b (c,r) = isMoveInBounds (c,r)
+    --where
+        -- workerFunction :: Board -> (Move -> Bool)
+        -- workerFunction [] _ = True
+        -- workerFunction (x:xs) m = y == EMPTY
+            -- where 
+               --  (y,z:zs) = splitAt index x
