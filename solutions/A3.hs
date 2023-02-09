@@ -92,10 +92,9 @@ isWinningLine' p l = workerFunction l
 -- Q#10
 isValidMove :: Board -> (Move -> Bool)
 isValidMove [] _ = False
-isValidMove b (c,r) = isMoveInBounds (c,r)
-    --where
-        -- workerFunction :: Board -> (Move -> Bool)
-        -- workerFunction [] _ = True
-        -- workerFunction (x:xs) m = y == EMPTY
-            -- where 
-               --  (y,z:zs) = splitAt index x
+isValidMove b m = isMoveInBounds m && workerFunction b m
+    where
+        workerFunction :: Board -> (Move -> Bool)
+        workerFunction [] _ = True
+        workerFunction (x:_) (0,c) = isColEmpty' x c
+        workerFunction (_:xs) (r,c) = workerFunction xs (r-1,c)

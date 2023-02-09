@@ -73,9 +73,8 @@ replaceSquareInRow player index row
     | otherwise = row
     where
         (x,y:ys)= splitAt index row
-
-isFieldEmpty :: Square -> Bool
-isFieldEmpty y = y == EMPTY
+        isFieldEmpty :: Square -> Bool
+        isFieldEmpty y = y == EMPTY
 
 rsX :: Int -> (Row -> Row)
 rsX index row = replaceSquareInRow X index row
