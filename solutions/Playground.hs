@@ -231,3 +231,14 @@ h = map (\x -> 2^x) [1,2,3,4,5]
 -- prefix always with () surrounded
 -- infix always with `` surrounded
 
+map' :: (a -> b) -> [a] -> [b]
+map' _ []        = []
+map' f (x:xs)    = (f x) : map' f xs
+
+filter' :: (a -> Bool) -> [a] -> [a]
+filter' p []     = []
+filter' p (x:xs) = if p x then x : filter' p xs else filter' p xs
+
+--isConsonant = \c -> isAlpha c && not (elem c "aeiou")
+-- filter (isUpper) "AbC"
+-- result: "AC"
