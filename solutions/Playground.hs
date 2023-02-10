@@ -238,7 +238,63 @@ map' f (x:xs)    = (f x) : map' f xs
 filter' :: (a -> Bool) -> [a] -> [a]
 filter' p []     = []
 filter' p (x:xs) = if p x then x : filter' p xs else filter' p xs
-
---isConsonant = \c -> isAlpha c && not (elem c "aeiou")
--- filter (isUpper) "AbC"
+-- filter' (isUpper) "AbC"
 -- result: "AC"
+
+-- fold
+-- fold is used for accumulation, where you change the output value
+sum' :: [Int] -> Int
+sum' []     = 0
+sum' (x:xs) = x + sum' xs
+-- sum' [1,2,3]
+product' :: [Int] -> Int
+product' []     = 1
+product' (x:xs) = x * product' xs
+
+-- the difference between sum' and product' is just 
+-- the exit expression (0,1,...) and the operator (+,*,...)
+-- use fold instead of sum'
+-- foldr (\x y -> x + y) 0 [1 .. 7]
+
+elemFoldr :: Eq a => a -> [a] -> Bool
+elemFoldr x ys = foldr (\a b -> a == x || b) False ys
+-- x = 19
+-- ys = [1,2,3,4,5,6,7]
+-- a = 1 // head of ys
+-- b /= [2,3,4,5,6,7]
+-- b = elemFoldr 19 [2,3,4,5,6,7] // function called on tail of ys
+
+-- 1st call = foldr (\a b -> a == 'h' || b) False "ghi"
+-- 2nd call = (\a b -> a == 'h' || b) 'g' (foldr f False "hi")
+
+reverseFoldr :: [a] -> [a]
+-- reverseFoldr []        = []
+-- reverseFoldr (x : xs) = reverseFoldr xs ++ [x]
+reverseFoldr ys = foldr (\a b -> b ++ [a]) [] ys
+
+upperFolder :: String -> String
+upperFolder ys = foldr (\a b -> (toUpper a) : b) [] ys
+
+-- old implementation of filter'
+--filter' :: (a -> Bool) -> [a] -> [a]
+--filter' p []     = []
+--filter' p (x:xs) = if p x then x : filter' p xs else filter' p xs
+-- new implementation of filter' with foldr
+filterFolder :: (a -> Bool) -> [a] -> [a]
+filterFolder p z = foldr (\x ys -> if p x then x : ys else ys) [] z
+-- if p x then x : filter' p xs else filter' p xs
+
+pokemonList :: [(String,Int)]
+pokemonList = [("Bulb", 1), ("Char", 4), ("Squirtle", 7), ("Pikachu", 25)]
+-- expected result ["Bulb", "Char", "Squirtle", "Pickachu"]
+getFirstItemOfTupel :: [(String,Int)] -> [String]
+getFirstItemOfTupel ys = foldr (\(s,i) y -> s : y) [] ys
+-- function call = getFirstItemOfTupel pokemonList
+-- result ["Bulb", "Char", "Squirtle", "Pickachu"]
+sumSecondItemOfTupel :: [(String,Int)] -> Int
+sumSecondItemOfTupel ys = foldr (\(s,i) y -> i + y) 0 ys
+-- sumSecondItemOfTupel ys = foldr (\x y -> snd x + y) 0 ys
+-- function call = sumSecondItemOfTupel pokemonList
+-- result: 37
+
+-- homework: foldl
