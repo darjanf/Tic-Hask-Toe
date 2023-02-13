@@ -258,6 +258,7 @@ product' (x:xs) = x * product' xs
 
 elemFoldr :: Eq a => a -> [a] -> Bool
 elemFoldr x ys = foldr (\a b -> a == x || b) False ys
+-- Eingabe: elemFoldr 19 [1,2,3,4,5,6,7]
 -- x = 19
 -- ys = [1,2,3,4,5,6,7]
 -- a = 1 // head of ys

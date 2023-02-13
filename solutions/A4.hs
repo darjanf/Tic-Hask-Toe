@@ -38,17 +38,29 @@ formatRows rl = map (\x -> formatLine (showSquares x)) rl
 -- Q#06
 isWinningLine_ :: Player -> (Line -> Bool)
 isWinningLine_ _ [] = False
-isWinningLine_ p l = null (filter (\sq -> p /= sq) l)
+isWinningLine_ player line = null (filter (\sq -> player /= sq) line)
 
 -- *** Assignment 4-2 *** --
 
 -- Q#07
-
-isWinningLine = undefined
+isWinningLine :: Player -> (Line -> Bool)
+isWinningLine _ [] = False
+isWinningLine player line = foldr (\sq r -> player == sq && r) True line
 
 -- Q#08
+hasWon :: Player -> (Board -> Bool)
+hasWon _ [] = False
+hasWon player board = foldr (\line r -> isWinningLine player line || r) False (getAllLines board)
 
-hasWon = undefined
+_X_WIN_ = [ [X, O, O]
+          , [O, X, O]
+          , [O, O, X]
+          ]
+
+_O_WIN_ = [ [O, X, O]
+          , [X, X, O]
+          , [X, O, O]
+          ]
 
 -- Q#09
 
