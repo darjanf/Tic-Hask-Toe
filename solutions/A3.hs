@@ -74,7 +74,7 @@ putSquare p b (r,c)
 -- Q#08
 prependRowIndices' :: [String] -> [String]
 prependRowIndices' []     = []
-prependRowIndices' sl = workerFunction (indexRowStrings sl)
+prependRowIndices' s = workerFunction (indexRowStrings s)
     where
         workerFunction :: [(Char,String)] -> [String]
         workerFunction [] = []

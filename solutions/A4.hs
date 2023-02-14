@@ -11,6 +11,7 @@ import A3 hiding (
   isWinningLine,
   prependRowIndices
   )
+import System.Posix.Internals (puts)
 
 -- *** Assignment 4-1 *** --
 
@@ -63,16 +64,22 @@ _O_WIN_ = [ [O, X, O]
           ]
 
 -- Q#09
+getGameState :: Board -> GameState
+getGameState []   = IN_PROGRESS
+getGameState b
+  | hasWon X b    = X_WON
+  | hasWon O b    = O_WON
+  | isTied b      = TIE
+  | otherwise     = IN_PROGRESS
 
-getGameState = undefined
-
-
-playMove = undefined
+playMove :: Player -> Board -> Move -> (GameState, Board)
+playMove p b m = (getGameState newBoard, newBoard)
+  where newBoard = putSquare p b m
 
 -- Q#10
-
-prependRowIndices = undefined
+prependRowIndices :: [String] -> [String]
+prependRowIndices s = zipWith (:) ['A'..] s
 
 -- Q#11
-
+formatBoard :: Board -> String
 formatBoard = undefined
