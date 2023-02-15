@@ -298,4 +298,12 @@ sumSecondItemOfTupel ys = foldr (\(s,i) y -> i + y) 0 ys
 -- function call = sumSecondItemOfTupel pokemonList
 -- result: 37
 
--- homework: foldl
+-- foldl
+-- fold (\y x -> 1 + y) 0 "abc"
+-- result: 3
+
+pangram :: String -> Bool
+pangram l = 
+    let s' = map toUpper s
+    in and (\a -> elem a s') ['A'..'Z']
+
