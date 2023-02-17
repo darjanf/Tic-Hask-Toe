@@ -302,8 +302,17 @@ sumSecondItemOfTupel ys = foldr (\(s,i) y -> i + y) 0 ys
 -- fold (\y x -> 1 + y) 0 "abc"
 -- result: 3
 
-pangram :: String -> Bool
-pangram l = 
-    let s' = map toUpper s
-    in and (\a -> elem a s') ['A'..'Z']
+--pangram :: String -> Bool
+--pangram l = 
+ --   let s' = map toUpper s
+ --   in and (\a -> elem a s') ['A'..'Z']
 
+toUpperTest1 = map (toUpper $) "abc" ++ "def" --result: ABCDEF
+toUpperTest2 = map toUpper $ "abc" ++ "def" --result: ABCdef
+
+-- Composition
+f :: String -> Char
+f = toUpper . head -- head will be called first (right to left:)
+
+(&) :: (a -> b) -> a -> b
+(&) f p = f p
