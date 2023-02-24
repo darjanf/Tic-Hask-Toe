@@ -8,6 +8,8 @@ import A5
 import Playground
 import Data.List
 import Data.Ord
+import Text.Printf
+import Control.Monad
 
 -- Task: Prompt the user for a string and print it.
 
@@ -74,9 +76,40 @@ main =
     in print sum -- u can use print istead of putStrLn
 -}
 
+{-
 getNumber :: IO Int
 getNumber = getLine >>= \a -> return (read a)
 main = 
     getNumber >>= \a ->
     getNumber >>= \b ->
     print (a + b)
+-}
+
+{-
+getNumber :: IO Float
+getNumber = getLine >>= \a -> return (read a)
+
+readInputs :: Int -> IO [Float]
+readInputs 0 = return []
+readInputs n = 
+    getNumber >>= \x ->
+    readInputs (n-1) >>= \xs ->
+    return (x : xs)
+
+average :: Int -> IO ()
+average n = 
+    readInputs n >>= \zs -> 
+    printf "Average: %f\n" (sum zs / fromIntegral (length zs))
+
+main = average 3
+-}
+
+average :: Int -> IO ()
+average n = 
+    replicateM n getLine >>= \xs ->
+    let
+        ns :: [Float]
+        ns = map read xs
+    in  print (sum ns / fromIntegral (length ns))
+
+main = average 2

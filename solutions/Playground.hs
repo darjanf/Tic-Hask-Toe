@@ -2,6 +2,8 @@ module Playground where
 
 import Data.Char
 import Debug.Trace
+import Data.List
+import Data.Ord
 
 _MY_PAIR_ :: (Int, Bool)
 _MY_PAIR_ = (33, True)
@@ -316,3 +318,40 @@ f = toUpper . head -- head will be called first (right to left:)
 
 (&) :: (a -> b) -> a -> b
 (&) f p = f p
+
+{-
+data Pokemon' = MkPokemon String Int [String]
+    deriving Show
+-}
+--type Name = String
+type Number = Int
+type Power = String
+data Pokemon' = MkPokemon -- record Syntax; MkPokemon is the constructorName
+    {
+        pName :: Name, -- these attributes are global getter/setter functions
+        pNumber :: Number,
+        pPowers :: [Power]
+    } deriving Show
+mybulbasauer :: Pokemon'
+-- bulbasauer = MkPokemon "Bulbasauer" 1 ["Grass", "Poison"]
+mybulbasauer = MkPokemon { 
+    pName =   "Bulbasauer",
+    pNumber = 1,
+    pPowers = ["Grass", "Poison"]
+}
+mypikachu = MkPokemon "Pikachu" 25 ["Electric"]
+
+getName :: Pokemon' -> String
+getName (MkPokemon name _ _) = name
+
+-- for chaning pPowers:
+-- bulbasauer' = bulbasauer { pPowers = ["Grass", "Poison"]} -- this creates a new Pokemon
+bulbasauer' = 
+    let oldPowers = pPowers mybulbasauer -- here pPowers is used as a getter function
+        newPowers = oldPowers ++ ["Poison"]
+    in mybulbasauer { pPowers = newPowers } -- here pPowers is used as a setter function
+
+maxNumber :: [Pokemon'] -> Pokemon'
+--maxNumber ps = maximumBy (comparing pNumber) ps
+maxNumber ps =
+    foldr1 (\p q -> if pNumber p > pNumber q then p else q) ps
