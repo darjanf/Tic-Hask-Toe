@@ -18,19 +18,28 @@ printBoard b = putStrLn $ formatBoard b
 _LOGO_PATH_ :: FilePath
 _LOGO_PATH_ = "./assets/logo.txt"
 
-
-printLogo = undefined
+printLogo :: IO ()
+printLogo = readFile _LOGO_PATH_ >>= \a -> putStrLn a
 
 -- Q#03
 _RANDOM_BOOL_ :: IO Bool
 _RANDOM_BOOL_ = uniformM globalStdGen
 
-
-firstPlayer = undefined
+firstPlayer :: IO ()
+firstPlayer = _RANDOM_BOOL_ >>= \b -> print $ getFirstPlayer b
 
 -- Q#04
-
-getMove = undefined
+getMove :: Board -> IO ()
+getMove b =
+    getLine >>= \m ->
+    let move = stringToMove m
+        vm = isValidMove b move
+    in 
+        if vm 
+        then print move
+        else 
+            putStrLn "Invalid move! Try again" >>
+            getMove b
 
 -- Q#05
 
