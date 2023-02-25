@@ -11,8 +11,8 @@ import Control.Monad (when)
 -- *** Assignment 5-1 *** --
 
 -- Q#01
-
-printBoard = undefined
+printBoard :: Board -> IO ()
+printBoard b = putStrLn $ formatBoard b
 
 -- Q#02
 _LOGO_PATH_ :: FilePath
