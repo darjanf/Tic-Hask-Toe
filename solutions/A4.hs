@@ -21,7 +21,7 @@ _HEADER_ = " " ++ formatLine (map show _RANGE_)
 
 -- Q#02
 showSquares :: [Square] -> [String]
-showSquares sq = map show sq
+showSquares sq = map showSquare sq
 
 -- Q#03
 dropFirstCol :: Board -> Board
@@ -82,4 +82,4 @@ prependRowIndices s = zipWith (:) ['A'..] s
 
 -- Q#11
 formatBoard :: Board -> String
-formatBoard = undefined
+formatBoard b = unlines $ _HEADER_ : prependRowIndices (formatRows b)
