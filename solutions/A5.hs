@@ -55,17 +55,40 @@ play b p =
 -- *** Assignment 5-2 *** --
 
 -- Q#07
-
-printLogoDo = undefined
+printLogoDo :: IO ()
+printLogoDo = do
+    a <- readFile _LOGO_PATH_
+    putStrLn a
 
 -- Q#08
-
-firstPlayerDo = undefined
+firstPlayerDo :: IO Player
+firstPlayerDo = do
+    b <- _RANDOM_BOOL_
+    return $ getFirstPlayer b
 
 -- Q#09
-
-getMoveDo = undefined
+getMoveDo :: Board -> IO Move
+getMoveDo b = do
+    m <- getLine
+    let move = stringToMove m
+        vm = isValidMove b move
+    --in
+    if vm 
+    then do return move 
+    else do 
+        putStrLn "Invalid move! Try again"
+        getMove b
 
 -- Q#10
-
-playDo = undefined
+playDo :: Board -> Player -> IO ()
+playDo b p = do
+    when _DISPLAY_LOGO_ printLogo
+    printBoard b
+    print (promptPlayer p)
+    m <- getMove b
+    let (gamestate, newboard) = playMove p b m
+    if gamestate == IN_PROGRESS
+    then do play newboard $ switchPlayer p
+    else do
+        printBoard newboard
+        print (showGameState gamestate)

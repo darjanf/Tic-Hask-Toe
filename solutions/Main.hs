@@ -115,4 +115,7 @@ average n =
 
 main = average 2
 -}
-main = firstPlayer >>= \p -> play _EMPTY_BOARD_ p
+-- main = firstPlayer >>= \p -> play _EMPTY_BOARD_ p
+main = do
+    p <- firstPlayer
+    playDo _EMPTY_BOARD_ p
