@@ -104,6 +104,7 @@ average n =
 main = average 3
 -}
 
+{-
 average :: Int -> IO ()
 average n = 
     replicateM n getLine >>= \xs ->
@@ -113,3 +114,5 @@ average n =
     in  print (sum ns / fromIntegral (length ns))
 
 main = average 2
+-}
+main = firstPlayer >>= \p -> play _EMPTY_BOARD_ p

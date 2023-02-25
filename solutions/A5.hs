@@ -25,8 +25,8 @@ printLogo = readFile _LOGO_PATH_ >>= \a -> putStrLn a
 _RANDOM_BOOL_ :: IO Bool
 _RANDOM_BOOL_ = uniformM globalStdGen
 
-firstPlayer :: IO ()
-firstPlayer = _RANDOM_BOOL_ >>= \b -> print $ getFirstPlayer b
+firstPlayer :: IO Player
+firstPlayer = _RANDOM_BOOL_ >>= \b -> return $ getFirstPlayer b
 
 -- Q#04
 getMove :: Board -> IO Move
