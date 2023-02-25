@@ -29,21 +29,28 @@ firstPlayer :: IO ()
 firstPlayer = _RANDOM_BOOL_ >>= \b -> print $ getFirstPlayer b
 
 -- Q#04
-getMove :: Board -> IO ()
+getMove :: Board -> IO Move
 getMove b =
     getLine >>= \m ->
     let move = stringToMove m
         vm = isValidMove b move
     in 
-        if vm 
-        then print move
-        else 
-            putStrLn "Invalid move! Try again" >>
-            getMove b
+        if vm then return move else putStrLn "Invalid move! Try again" >> getMove b
 
 -- Q#05
-
-play = undefined
+play :: Board -> Player -> IO ()
+play b p =
+    when _DISPLAY_LOGO_ printLogo >>
+    printBoard b >>
+    print (promptPlayer p) >>
+    getMove b >>= \m ->
+    let (gamestate, newboard) = playMove p b m
+    in 
+        if gamestate == IN_PROGRESS
+        then play newboard $ switchPlayer p
+        else 
+            printBoard newboard >>
+            print (showGameState gamestate)
 
 -- *** Assignment 5-2 *** --
 
