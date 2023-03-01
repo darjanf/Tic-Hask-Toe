@@ -326,7 +326,7 @@ data Pokemon' = MkPokemon String Int [String]
 --type Name = String
 type Number = Int
 type Power = String
-data Pokemon' = MkPokemon -- record Syntax; MkPokemon is the constructorName
+data Pokemon' = MkPokemon -- record syntax; MkPokemon is the constructorName
     {
         pName :: Name, -- these attributes are global getter/setter functions
         pNumber :: Number,
@@ -355,3 +355,46 @@ maxNumber :: [Pokemon'] -> Pokemon'
 --maxNumber ps = maximumBy (comparing pNumber) ps
 maxNumber ps =
     foldr1 (\p q -> if pNumber p > pNumber q then p else q) ps
+
+-- Polymorphic Types
+-- data Pair a b = MkPair a b
+data Pair a b = MkPair { first :: a, second :: b } -- record syntax
+    deriving Show
+
+p2t :: Pair a b -> (a,b)
+p2t (MkPair x y) = (x,y)
+
+t2p :: (a,b) -> Pair a b
+t2p (x,y) = MkPair x y
+
+-- p2t and t2p are called semimorphic types
+
+-- Optional datatype
+-- Int' is almost a Int but without an extra Null value called Nil
+data Int' = MkInt' Int | INil
+    deriving Show
+xInt' :: Int'
+xInt' = MkInt' 7
+yInt :: Int
+yInt = 7
+-- divide :: Int -> Int -> Int
+-- if you use this signature, then you get a exception when dividing by 0
+-- instead use Int', because we defined a Null value called INil
+divide :: Int -> Int -> Int'
+divide x 0 = INil -- Here you can use the Null value INil
+divide x y = MkInt' (div x y) -- but hen you have to use also the MkInt' constructor
+-- Optional Dataytpye for polymorphic datatypes
+data Optional a = Nil | MkOptional a -- in Haskell there is already a Optional type called maybe
+    deriving Show
+divide' :: Int -> Int -> Optional Int
+divide' x 0 = Nil
+divide' x y = MkOptional (div x y)
+
+-- data Maybe already exists in Haskell
+-- data Maybe a = Nothing | Just a
+--  deriving Show
+-- divide :: Int -> Int -> Maybe Int
+-- divide x 0 = Nothing
+-- divide x y = Just (div x y)
+
+-- Typeclasses

@@ -27,6 +27,7 @@ executable TicHaskToe
                     , A4
                     , A5
                     , Sandbox
+                    , Playground
 
     build-depends:
         base ^>=4.14.1.0
