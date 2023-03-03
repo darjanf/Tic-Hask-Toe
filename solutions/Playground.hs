@@ -4,6 +4,7 @@ import Data.Char
 import Debug.Trace
 import Data.List
 import Data.Ord
+import Text.Read
 
 _MY_PAIR_ :: (Int, Bool)
 _MY_PAIR_ = (33, True)
@@ -395,6 +396,69 @@ divide' x y = MkOptional (div x y)
 --  deriving Show
 -- divide :: Int -> Int -> Maybe Int
 -- divide x 0 = Nothing
--- divide x y = Just (div x y)
+-- divide x y = d
 
--- Typeclasses
+-- ************************************
+-- what purpose of whole "maybe" thing?
+-- data Maybe a = Just a | Nothing
+-- Maybe is used for "partial functions"
+-- these function work only on a partial input (f.e. the function "root" or "divide")
+divide'' :: Int -> Int -> Maybe Int
+divide'' x 0 = Nothing
+divide'' x y = Just (div x y)
+
+fDivide :: (Int,Int) -> (Int,Int) -> Maybe Int
+-- fDivide (w,x) (y,z) = divide'' w x + divide'' y z
+-- this fDivide implementation will not work, you can't add two maybe values
+-- the solutions is to extract the divide output
+fDivide (w,x) (y,z) =
+    case divide'' w x of
+        Nothing -> Nothing
+        Just a -> 
+            case divide'' y z of
+                Nothing -> Nothing
+                Just b -> Just (a + b)
+-- test: fDivide (12,3) (18,0) --> result = 
+-- test: fDivide (12,3) (18,6) --> Just 7
+
+validateName :: String -> Maybe String
+validateName s = if not (isUpper (head s)) then Nothing else Just s
+
+validateNum :: String -> Maybe Int
+validateNum s = 
+    let n = readMaybe s
+    in case n of 
+        Nothing -> Nothing
+        Just x -> if x < 1 then Nothing else Just x
+
+validatePowers :: [String] -> Maybe [String]
+validatePowers ps = if null ps then Nothing else Just ps
+
+{-
+mkPokemon :: String -> String -> [String] -> Maybe Pokemon'
+mkPokemon name number powers =
+    case validateName name of
+        Nothing -> Nothing
+        Just name' ->
+            case validateNum number of
+                Nothing -> Nothing
+                Just number' ->
+                    case validatePowers powers of
+                        Nothing -> Nothing
+                        Just powers' -> Just (MkPokemon name' number' powers')
+-}
+
+mkPokemon :: String -> String -> [String] -> Maybe Pokemon'
+mkPokemon name num powers =
+    validateName name       >>= \name'      -> -- instead you can use the bind operator >>=
+    validateNum num         >>= \num'       ->
+    validatePowers powers   >>= \powers'    ->
+    return (MkPokemon name' num' powers')
+
+-- IO and Maybe are both implementing Monad typeclass
+-- (>>=) :: IO  a   -> (a -> IO b)      -> IO b
+-- (>>=) :: Maybe a -> (a -> Maybe b)   -> Maybe b
+
+-- String and Pokemon are both implementing Eq typeclasse
+--(==) :: String  -> String   -> Boolean
+--(==) :: Pokemon -> Pokemon  -> Boolean
