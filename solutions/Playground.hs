@@ -4,7 +4,8 @@ import Data.Char
 import Debug.Trace
 import Data.List
 import Data.Ord
-import Text.Read
+import Text.Read hiding (get)
+import Control.Monad.State
 
 _MY_PAIR_ :: (Int, Bool)
 _MY_PAIR_ = (33, True)
@@ -332,7 +333,8 @@ data Pokemon' = MkPokemon -- record syntax; MkPokemon is the constructorName
         pName :: Name, -- these attributes are global getter/setter functions
         pNumber :: Number,
         pPowers :: [Power]
-    } deriving Show
+    } deriving (Eq)
+
 mybulbasauer :: Pokemon'
 -- bulbasauer = MkPokemon "Bulbasauer" 1 ["Grass", "Poison"]
 mybulbasauer = MkPokemon { 
@@ -459,6 +461,89 @@ mkPokemon name num powers =
 -- (>>=) :: IO  a   -> (a -> IO b)      -> IO b
 -- (>>=) :: Maybe a -> (a -> Maybe b)   -> Maybe b
 
--- String and Pokemon are both implementing Eq typeclasse
+-- String and Pokemon are both implementing Eq typeclass
 --(==) :: String  -> String   -> Boolean
 --(==) :: Pokemon -> Pokemon  -> Boolean
+
+addNums :: IO ()
+addNums =
+    getLine >>= \s ->
+    getLine >>= \t ->
+    let a = read s
+        b = read t
+    in print ((a :: Int) + b)
+
+{-
+contexts in Haskell:
+input output:
+- IO:
+data IO a = ...
+
+error handling:
+- Maybe
+data Maybe a = ...
+- Either
+data Either e a = ...
+
+state manipulation:
+- State: 
+data State s a = ...
+
+dynamic environment:
+- Reader
+-}
+
+type Party = [Pokemon']
+
+{-
+Typicall implementation for Pokemon-Party without state would look like following:
+
+addPokemon :: Pokemon' -> Party -> Party
+addPokemon p ps = p : ps
+
+removePokemon :: Pokemon' -> Party -> Party
+removePokemon p ps = delete p ps
+-}
+
+-- Implementation with state looks like following:
+addPokemon :: Pokemon' -> State Party ()
+addPokemon p = do
+    ps <- get -- gets the current state
+    -- get >>= \ps -> -- alternative syntax without do
+    put (p : ps) -- sets the new state
+
+removePokemon :: Pokemon' -> State Party ()
+removePokemon p = do
+    ps <- get
+    put (delete p ps)
+
+task :: State Party ()
+task = do
+    addPokemon mypikachu
+    addPokemon mybulbasauer
+
+task2 :: State Party Int
+task2 = do
+    addPokemon mypikachu
+    ps <- get
+    return (length ps)
+
+task3 :: State Party Int
+task3 = do
+    task2
+    addPokemon mybulbasauer
+    ps <- get
+    return (length ps)
+
+task4 :: State Party Int
+task4 = do
+    ps <- get
+    return (length ps)
+
+myRunState =  runState task  [] -- return value = ((),[Bulbasauer,Pikachu])
+myRunState2 = runState task2 [] -- return value = (1,[Pikachu])
+myRunState3 = runState task3 [] -- return value = (2,[Bulbasauer,Pikachu])
+myRunState4 = runState task4 [] -- return value = (0,[])
+
+instance Show Pokemon' where
+    show pokemon = pName pokemon
