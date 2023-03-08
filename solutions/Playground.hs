@@ -547,3 +547,25 @@ myRunState4 = runState task4 [] -- return value = (0,[])
 
 instance Show Pokemon' where
     show pokemon = pName pokemon
+
+-- Monad (only with parameter):
+-- Maybe a      -- Monomorphic
+-- [a]          -- Monomorphic
+-- Either e a   -- Polymorphic
+-- State s a    -- Polymorphic
+--
+-- No Monad (without parameter):
+-- Int
+-- Char
+--
+-- Eq:      (==)    :: a -> a -> Bool
+-- Show:    show    :: a -> String
+-- Num:     (+)     :: a -> a -> a
+
+{-
+class Monad m where
+    return :: a -> [] a
+    (>>=) :: m a -> (a -> m b) -> m b 
+    --"m a" is a monad value. this monad value you can't extract
+    --but you can take an expression "(a -> m b)" and extract a by returning "m b"
+-}
