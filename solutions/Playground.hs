@@ -357,7 +357,7 @@ maxNumber :: [Pokemon'] -> Pokemon'
 maxNumber ps =
     foldr1 (\p q -> if pNumber p > pNumber q then p else q) ps
 
--- Polymorphic Types
+-- Polymorphic Types -- synonym is parametric datatype
 -- data Pair a b = MkPair a b
 data Pair a b = MkPair { first :: a, second :: b } -- record syntax
     deriving Show
