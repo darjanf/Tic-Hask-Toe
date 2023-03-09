@@ -589,7 +589,8 @@ play s = do
         LT -> putStrLn "Low"  >> play s
         GT -> putStrLn "High" >> play s
 
-playWithState :: Int -> StateT Int IO () -- combined Monad (State && IO)
+playWithState :: Int -> StateT Int IO () -- here a combined Monad (State && IO) is used
+-- a combined monad is also called "Tranformers"
 -- playWithState :: (MonadState Int m, MonadIO m) => Int -> m () -- alternative signature
 -- for this signature in the first row following is nedded:
 -- {-# Language FlexibleContexts #-}
