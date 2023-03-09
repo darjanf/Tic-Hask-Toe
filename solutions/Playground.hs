@@ -6,6 +6,8 @@ import Data.List
 import Data.Ord
 import Text.Read hiding (get)
 import Control.Monad.State
+import System.IO
+import Text.Printf
 
 _MY_PAIR_ :: (Int, Bool)
 _MY_PAIR_ = (33, True)
@@ -517,10 +519,11 @@ removePokemon p = do
     ps <- get
     put (delete p ps)
 
-task :: State Party ()
-task = do
+task1 :: State Party ()
+task1 = do
     addPokemon mypikachu
     addPokemon mybulbasauer
+    return ()
 
 task2 :: State Party Int
 task2 = do
@@ -540,13 +543,98 @@ task4 = do
     ps <- get
     return (length ps)
 
-myRunState =  runState task  [] -- return value = ((),[Bulbasauer,Pikachu])
+task5 :: State Party Int
+task5 = do
+    task1
+    ps <- get
+    put []
+    return (length ps)
+
+myRunState1 = runState task1 [] -- return value = ((),[Bulbasauer,Pikachu])
 myRunState2 = runState task2 [] -- return value = (1,[Pikachu])
 myRunState3 = runState task3 [] -- return value = (2,[Bulbasauer,Pikachu])
 myRunState4 = runState task4 [] -- return value = (0,[])
+myRunState5 = runState task5 [] -- return value = (2,[])
 
 instance Show Pokemon' where
     show pokemon = pName pokemon
+
+-- StateT is a State-Transformer
+-- liftIO --> is used to lift the IO
+
+addPokemonT :: Pokemon' -> StateT Party IO ()
+addPokemonT p = do
+    ps <- get -- gets the current state
+    -- get >>= \ps -> -- alternative syntax without do
+    put (p : ps) -- sets the new state
+
+task6 :: StateT Party IO ()
+task6 = do
+    addPokemonT mypikachu
+    ps <- get
+    liftIO (putStrLn $ "The state is: " ++ show ps)
+    addPokemonT mybulbasauer
+
+myRunState6 = runStateT task6 [] -- return value = (2,[])
+
+getInt :: IO Int
+getInt = getLine >>= \s -> return $ read s
+
+play :: Int -> IO ()
+play s = do
+    putStrLn "Enter the guess"
+    g <- getInt
+    case compare g s of
+        EQ -> putStrLn "Yay, You won the game!"
+        LT -> putStrLn "Low"  >> play s
+        GT -> putStrLn "High" >> play s
+
+playWithState :: Int -> StateT Int IO () -- combined Monad (State && IO)
+-- playWithState :: (MonadState Int m, MonadIO m) => Int -> m () -- alternative signature
+-- for this signature in the first row following is nedded:
+-- {-# Language FlexibleContexts #-}
+playWithState s = do
+    chances <- get
+    case chances < 1 of
+        True -> liftIO $ putStrLn "Alas, you lost the game!"
+        False -> do
+            liftIO $ printf  "\nYou have %d chances left\n" chances
+            liftIO $ putStrLn "Enter the guess"
+            g <- liftIO $ getInt
+            analyse g s
+
+analyse :: Int -> Int -> StateT Int IO ()
+analyse g s = do
+    case compare g s of
+        EQ -> liftIO $ putStrLn "Yay, You won the game!"
+        LT -> do 
+            liftIO $ putStrLn "Low"
+            -- put (chance - 1) -- do not use put! not a good idea, because maybe State has changed!
+            -- use modifiy instead
+            -- function which changes the state and takes a function and runs the function on the freshest value of state
+            modify (\c -> c - 1)
+            playWithState s
+        GT -> do
+            liftIO $ putStrLn "High"
+            modify (\c -> c - 1)
+            playWithState s
+
+runGuessGameWithoutState :: IO ()
+runGuessGameWithoutState = do
+    putStrLn "Enter the secret number"
+    hSetEcho stdin False
+    s <- getInt
+    hSetEcho stdin True
+    play s
+
+runGuessWithState :: IO ()
+runGuessWithState = do
+    liftIO $ putStrLn "Enter the secret number"
+    liftIO $ hSetEcho stdin False
+    s <- liftIO $ getInt
+    liftIO $ hSetEcho stdin True
+    runStateT (playWithState s) 5
+    return ()
 
 -- Monad (only with parameter):
 -- Maybe a      -- Monomorphic
