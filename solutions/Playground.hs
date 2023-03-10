@@ -692,3 +692,43 @@ class Monad m where
     With State, you are carrying an extra State value around with you.
     There is also a Reader monad, and other plenty monads...
 -}
+
+-- Cabal
+-- https://cabal.readthedocs.io/en/3.4/getting-started.html
+
+-- package
+-- https://hackage.haskell.org
+-- a package is a collection of modules
+
+-- module
+-- a module is a unit of declartion bundle
+-- class Eq a where
+--  (==) :: a -> a -> Bool
+--  (/=) :: a -> a -> Bool
+-- instance Eq Pokemon where
+--  (==) p q = undefined
+-- data Pokemon = ...
+
+-- import Data.List -- importing all functions from the module Data.List
+-- when using import you are importing the Data.List Module
+-- example: https://hackage.haskell.org/package/base-4.18.0.0/docs/Data-List.html
+-- import Data.Functor (void, (<$>)) -- here we are only importing the functions inside the brackets
+-- import Data.Functor hiding (void, (<$>)) -- here we are import all functions, except the functions in the brackets
+
+-- qualified import
+-- import qualified Data.Char as C (toUpper)
+-- here we are creating a synonym 'C' for toUpper and using 'C' instead of toUpper
+
+-- functor
+change :: Monad m => (a -> b) -> m a -> m b
+change f x = do
+    v <- x
+    return (f v)
+-- calling the change function: change reverse getLine
+-- the change function is already implemented as fmap
+-- calling the fmap function: fmap reverse getLine
+-- Functor -- is a superclass typeclass of Monad
+--  - fmap
+-- Monad
+--  - return
+--  - (>>=)
