@@ -1,71 +1,81 @@
+{-# Language FlexibleContexts #-}
+
 module Hangman where
 
-import Data.Char
-import Debug.Trace
-import Data.List
-import Data.Ord
-import Text.Read hiding (get)
 import Control.Monad.State
+import Data.Char
+import Data.List
 import System.IO
+import Text.Printf
 
-{-
-_ _ _ _ _
-Task of Hangman is to guess the word, by asking if a letter is inside
-if a letter is not inside a word, your wrong-answer-number increased
+type Secret  = String
+type Chances = Int
+type Guess   = Char
 
-type Secret     = String
-type Chances    = Int
-type Guess     = Char
+data Hangman = Hangman { hWord :: [(Char, Char)], hChances :: Chances }
+  deriving Show
 
-data Hangman = Hangman {
-    hWord       :: [(Char, Char)],
-    hChances    :: Chances
-} deriving Show
+getGuess :: IO Char
+getGuess =
+  printf "Enter the letter: " >>
+  getLine >>= \s -> 
+  let x = head s in
+  case isAlpha x of
+    True  -> do
+      return (toUpper x)
+    False -> do
+      printf "Invalid character\n"
+      getGuess
 
 mkHangman :: Secret -> Hangman
 mkHangman secret = Hangman (map (\c -> (toUpper c, '_')) secret) 7
 
-getGuess :: IO Char
-getGuess =
-    printf "Enter the letter.\n" >>
-    getLine >>= \s ->
-    let x = head s in
-    case isAlpha $ x of
-        True    -> do
-            return $ toUpper x
-        False   -> do
-            printf "Invalid character."
-            getGuess
-
-decChances :: State Hangman ()
-decChances = modify (\h -> h {hChances = hChances h - 1})
-
-changeWord :: Guess -> State Hangman ()
-changeWord guess = modify $ \h ->
-    let oldWord = hWord h
-        newWord = map (\(x,y) -> if x == guess then (x,guess) else (x, '_')) oldWord
-    in h { hWord = newWor }
-
-procLetter :: Guess -> State Hangman ()
+procLetter :: Guess -> StateT Hangman IO ()
 procLetter guess = do
-    currentHangman <- get
-    let word = hWord currentHangman
-    case elem guess (map fst word) of
-        True    -> changeWord guess
-        False   -> decChances
+  oldHangman <- get
+  let word = hWord oldHangman
+  case elem guess (map fst word) of
+    True  -> changeWord
+    False -> decChances
+  where
+  decChances = modify (\h -> h { hChances = hChances h - 1 })
+  changeWord = modify $ \h ->
+    let oldWord = hWord h
+        newWord = map (\(secret, y) -> if secret == guess then (secret, guess) else (secret, y)) oldWord
+    in  h { hWord = newWord }
 
-main =
-    hSetBuffering stdout NoBuffering >>
-    printf "Enter the secret word." >>
-    hSetEcho stdin False >>
-    getLine >>= \secret ->
-    hSetEcho stdin True >>
-    printf "\n" >>
-    print (mkHangman secret)
-    --let hangman = mkHangman secret
-    --putStrLn "You have %d chances.\n" (hChances hangman)
-    --printf "Enter the letter.\n"
-    -- letter <- getLetter
-    --printf "you have entered %c\n." letter
+renderGame :: StateT Hangman IO ()
+renderGame = do
+  hangman <- get
+  let word    = hWord hangman
+      chances = hChances hangman
+  liftIO (putStrLn (intersperse ' ' (map snd word)))
+  liftIO (printf "You have %d chances left.\n\n" chances)
+  
+playGame :: StateT Hangman IO ()
+playGame = do
+  h <- get
+  case hChances h > 0 of
+    False -> do
+      liftIO (printf "Sorry, You lose!")
+    True  -> do
+      case all (/= '_') (map snd (hWord h)) of
+        True  -> do
+          liftIO (printf "The word was %s.\n" (map snd (hWord h)))
+          liftIO (printf "Yay, You win!\n\n")
+        False -> do
+          renderGame
+          guess <- liftIO getGuess
+          procLetter guess
+          playGame
 
--}
+main :: IO ()
+main = do
+  hSetBuffering stdout NoBuffering 
+  printf "Enter the secret word: "
+  hSetEcho stdin False
+  secret <- getLine
+  hSetEcho stdin True
+  printf "\n"
+  runStateT playGame (mkHangman secret)
+  return ()

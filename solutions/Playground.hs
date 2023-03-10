@@ -637,24 +637,58 @@ runGuessWithState = do
     runStateT (playWithState s) 5
     return ()
 
--- Monad (only with parameter):
--- Maybe a      -- Monomorphic
--- [a]          -- Monomorphic
--- Either e a   -- Polymorphic
--- State s a    -- Polymorphic
---
--- No Monad (without parameter):
--- Int
--- Char
---
+-- What is a Monad, that is the question!
+-- We learned about Typeclasses.
+-- What is a Typeclass?
+-- A Typeclass is a set of functionalities, which a type must implementent.
+-- Then the Type is set to an instance of that typeclass.
+-- So f.e. if a Type implements the typeclass EQ, then f.e. the function (==) is implementent.
+-- Typeclasses:
 -- Eq:      (==)    :: a -> a -> Bool
 -- Show:    show    :: a -> String
 -- Num:     (+)     :: a -> a -> a
-
+-- So what is a Monad then? A Monad is also a typeclass!
+-- But it is not available for types like a, b, for which you would think about Eq, Show, Num, etc.
+-- Monad is a typeclass for special types, which are polymorphic types.
+-- For Example:
+    -- Maybe a      -- Polymorphic
+    -- [a]          -- Polymorphic
+    -- Either e a   -- Polymorphic
+    -- State s a    -- Polymorphic
+-- These types are having at least one type parameters.
+-- No Monad (without type parameters):
+    -- Int              -- Monomorphic
+    -- Char             -- Monomorphic
+    -- String           ...
+-- Monads make only sense, when there is a type parameter available!
+-- Here is the definition of the Monad typeclass:
 {-
 class Monad m where
-    return :: a -> [] a
+    return :: a -> [] a 
+    return is a function of Monad
     (>>=) :: m a -> (a -> m b) -> m b 
-    --"m a" is a monad value. this monad value you can't extract
-    --but you can take an expression "(a -> m b)" and extract a by returning "m b"
+    (>>=) bind is a function of Monad
+    m is not a type like Int, Char, Bool,
+    a, b, c... are like Int, Char, Bool
+    m represent the polymorphic datatype
+    m can be a "Maybe", "[]", "IO", "Either", "State", etc..
+    (>>=) :: IO a -> (a -> IO b) -> IO b
+    (>>=) :: [] a -> (a -> [] b) -> [] b
+    (>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
+    (>>=) :: State a -> (a -> State b) -> State b
+    when there is a datatype, which implements these two functions "return" and "(>>=)", 
+    this datatype is called a monad!
+    Lets look at this bind implementation:
+    ()>>=) :: IO a -> (a -> IO b) -> IO b
+    "IO a" is called a monadic value.
+    "(a -> IO b)" is called a callback
+    "IO b" is called the result, which is another monadic value
+    We have establiches, that for IO we can't extract the internal value.
+    But we can provide a callback (a -> m b) to work on that internal value.
+    So what does the callback function (a -> m b) do?
+    Well, here is the generality of monads! It could do anything.
+    With IO, you can do Input Output.
+    With Maybe, you are doing Error-Handling.
+    With State, you are carrying an extra State value around with you.
+    There is also a Reader monad, and other plenty monads...
 -}
