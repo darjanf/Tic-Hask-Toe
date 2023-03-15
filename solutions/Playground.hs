@@ -732,3 +732,8 @@ change f x = do
 -- Monad
 --  - return
 --  - (>>=)
+
+---- sequence
+-- create multiple IO () functions
+-- sequence_ (replicate 10 (putStrLn "Hallo"))
+-- mapM_ (putStrLn . show) [1 .. 100]
