@@ -8,6 +8,9 @@ import Data.Monoid
 import Data.Ord
 import Data.Semigroup
 import Debug.Trace
+import qualified Data.Map as Map
+import qualified Data.Set as Set
+import qualified Data.Sequence as Seq
 import System.IO
 import Text.Printf
 import Text.Read hiding (get)
@@ -758,9 +761,6 @@ ex = runState (reverseWithCount "star" >>= noReverseWithCount) 0
 
 newtype Height = Height { getHeight :: Float }
 
-myListComprehension :: [String] -> [String]
-myListComprehension ps = [p | p <- ps, p == "Darjan"]
-
 -- Semigroups & Monoid
 -- Semigroup is a typeclass (<>)
 -- A list is for example a semigroup
@@ -784,3 +784,57 @@ myEmptyFoldInstance = fold [] -- result Sum {getSum = 0}
 
 myMaxInstance :: Max Int
 myMaxInstance = fold (map Max [1 .. 100])
+
+-- Map
+pokemon :: [(Number, Pokemon)]
+pokemon = [(1, "Bulbasauer"), (4, "Charmander"), (7, "Squirtle")] -- fromList [(1,"Bulbasauer"),(4,"Charmander"),(7,"Squirtle")]
+
+pokemonMap :: Map.Map Number Pokemon
+pokemonMap  = Map.fromList pokemon
+pokemonMap2 = Map.insert 25 "Pikachu" pokemonMap -- fromList [(1,"Bulbasauer"),(4,"Charmander"),(7,"Squirtle"),(25,"Pikachu")]
+pokemonMap3 = Map.delete 4 pokemonMap2 -- fromList [(1,"Bulbasauer"),(7,"Squirtle"),(25,"Pikachu")]
+
+lookupPokemon :: Maybe Pokemon
+lookupPokemon = Map.lookup 4 pokemonMap2 -- Just "Charmander"
+lookupPokemon2 = Map.lookup 12 pokemonMap2 -- Nothing
+
+--Set
+pokemonSetInput :: [Pokemon]
+pokemonSetInput = ["Bulbasauer", "Charmander", "Squirtle"]
+
+pokemonSet :: Set.Set Pokemon
+pokemonSet  = Set.fromList pokemonSetInput
+pokemonSet2 = Set.insert "Pikachu" pokemonSet
+pokemonSet3 = Set.insert "Pikachu" pokemonSet -- Nothing changed, because Set is unique
+pokemonSet4 = Set.delete "Charmander" pokemonSet -- Nothing changed, because Set is unique
+
+memberPokemon :: Bool
+memberPokemon = Set.member "Bulbasauer" pokemonSet
+
+-- Sequence
+pokemonSeqInput :: [Pokemon]
+pokemonSeqInput = ["Bulbasauer", "Charmander", "Squirtle"]
+
+pokemonSeq :: Seq.Seq Pokemon
+pokemonSeq  = Seq.fromList pokemonSeqInput
+pokemonSeq2 = "Pikachu" Seq.<| pokemonSeq -- the <| operator acts like 'cons', Pikachu is added at the beginning
+pokemonSeq3 = pokemonSeq Seq.|> "Vulpix" -- Vulpix is added at the end
+pokemonSeq4 = pokemonSeq Seq.>< (Seq.fromList ["Vulpix", "Magikarp"])
+
+-- List comprehensions
+myListComprehension :: [String] -> [String]
+myListComprehension ps = [p | p <- ps, p == "Darjan"]
+
+evens :: [Int] -> [Int]
+evens xs = [ x | x <- xs, mod x 2 == 0 ] -- evens [1..100]
+
+factors :: Int -> [Int]
+factors n = [ x | x <- [1 .. n], mod n x == 0] -- factors 24
+
+primes :: Int -> [Int]
+primes n = [ x | x <- [ 1.. n], factors x == [1,x]] -- primes 50
+
+createTupleList :: [Int] -> [Int] -> [(Int,Int)]
+createTupleList a b = [ (x,y) | x <- [1,2,3], y <- [4,5,6]] 
+-- createTupleList [1,2,3] [4,5,6]
+-- result: [(1,4),(1,5),(1,6),(2,4),(2,5),(2,6),(3,4),(3,5),(3,6)]
