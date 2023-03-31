@@ -1,13 +1,16 @@
 module Playground where
 
-import Data.Char
-import Debug.Trace
-import Data.List
-import Data.Ord
-import Text.Read hiding (get)
 import Control.Monad.State
+import Data.Char
+import Data.Foldable
+import Data.List
+import Data.Monoid
+import Data.Ord
+import Data.Semigroup
+import Debug.Trace
 import System.IO
 import Text.Printf
+import Text.Read hiding (get)
 
 _MY_PAIR_ :: (Int, Bool)
 _MY_PAIR_ = (33, True)
@@ -732,8 +735,52 @@ change f x = do
 -- Monad
 --  - return
 --  - (>>=)
-
 ---- sequence
 -- create multiple IO () functions
 -- sequence_ (replicate 10 (putStrLn "Hallo"))
 -- mapM_ (putStrLn . show) [1 .. 100]
+
+-- Applicatives
+data Contact = Contact { getFirst :: String, getLast :: String } deriving Show
+
+makeIOContact :: IO Contact
+makeIOContact = Contact <$> getLine <*> getLine
+
+type Count = Int
+reverseWithCount :: [a] -> State Count [a]
+reverseWithCount list = state $ (\count -> (reverse list, count +1))
+
+noReverseWithCount :: [a] -> State Count [a]
+noReverseWithCount list = state $ (\count -> (list, count +1))
+
+ex :: (String, Count)
+ex = runState (reverseWithCount "star" >>= noReverseWithCount) 0
+
+newtype Height = Height { getHeight :: Float }
+
+myListComprehension :: [String] -> [String]
+myListComprehension ps = [p | p <- ps, p == "Darjan"]
+
+-- Semigroups & Monoid
+-- Semigroup is a typeclass (<>)
+-- A list is for example a semigroup
+-- Associativity property (needed) (x<>y)<>z = x<>(y<>z)
+-- Commutativity (not needed) x <> y = y <> x
+
+mySemiInstance :: [String]
+mySemiInstance = ["abc", "def", "hij"] <> ["lmn", "opq"]  -- result "abcdefhijlmnopq"
+
+myFoldStringInstance :: String
+myFoldStringInstance = fold ["abc", "def", "ghi"]  -- result "abcdefghi"
+
+mySumInstance :: Sum Int
+mySumInstance = Sum 3 <> Sum 4 -- result Sum {getSum = 7}
+
+myFoldSumInstance :: Sum Int
+myFoldSumInstance = fold [Sum 3, Sum 4] -- result Sum {getSum = 7}
+
+myEmptyFoldInstance :: Sum Int
+myEmptyFoldInstance = fold [] -- result Sum {getSum = 0}
+
+myMaxInstance :: Max Int
+myMaxInstance = fold (map Max [1 .. 100])
